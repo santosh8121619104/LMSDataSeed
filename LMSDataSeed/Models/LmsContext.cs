@@ -37,6 +37,8 @@ public partial class LmsContext : DbContext
 
     public virtual DbSet<Lesson> Lessons { get; set; }
 
+    public virtual DbSet<LessonStep> LessonSteps { get; set; }
+
     public virtual DbSet<Module> Modules { get; set; }
 
     public virtual DbSet<Question> Questions { get; set; }
@@ -59,7 +61,7 @@ public partial class LmsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;database=Lms;Trusted_Connection=True;MultipleActiveResultSets=true");
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Lms;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +70,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.AnnouncementId).HasName("PK__Announce__9DE445545CCBA3E5");
 
             entity.ToTable("Announcement");
+
+            entity.HasIndex(e => e.CourseId, "IX_Announcement_CourseID");
+
+            entity.HasIndex(e => e.UserId, "IX_Announcement_UserID");
 
             entity.Property(e => e.AnnouncementId).HasColumnName("AnnouncementID");
             entity.Property(e => e.AnnouncementText).HasColumnType("text");
@@ -99,6 +105,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.AssessmentId).HasName("PK__Assessme__3D2BF83E1CFE8C04");
 
             entity.ToTable("Assessment");
+
+            entity.HasIndex(e => e.CourseId, "IX_Assessment_CourseID");
+
+            entity.HasIndex(e => e.ModuleId, "IX_Assessment_ModuleID");
 
             entity.Property(e => e.AssessmentId).HasColumnName("AssessmentID");
             entity.Property(e => e.AssessmentName)
@@ -132,6 +142,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.AssignmentId).HasName("PK__Assignme__32499E57F27E7EEC");
 
             entity.ToTable("Assignment");
+
+            entity.HasIndex(e => e.CourseId, "IX_Assignment_CourseID");
+
+            entity.HasIndex(e => e.ModuleId, "IX_Assignment_ModuleID");
 
             entity.Property(e => e.AssignmentId).HasColumnName("AssignmentID");
             entity.Property(e => e.AssignmentName)
@@ -188,6 +202,10 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("Course");
 
+            entity.HasIndex(e => e.CategoryId, "IX_Course_CategoryID");
+
+            entity.HasIndex(e => e.InstructorId, "IX_Course_InstructorID");
+
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CourseName)
@@ -223,6 +241,10 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("DiscussionForum");
 
+            entity.HasIndex(e => e.CourseId, "IX_DiscussionForum_CourseID");
+
+            entity.HasIndex(e => e.ModeratorId, "IX_DiscussionForum_ModeratorID");
+
             entity.Property(e => e.ForumId).HasColumnName("ForumID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
@@ -253,6 +275,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.EnrollmentId).HasName("PK__Enrollme__7F6877FB6A9BD524");
 
             entity.ToTable("Enrollment");
+
+            entity.HasIndex(e => e.CourseId, "IX_Enrollment_CourseID");
+
+            entity.HasIndex(e => e.UserId, "IX_Enrollment_UserID");
 
             entity.Property(e => e.EnrollmentId).HasColumnName("EnrollmentID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
@@ -285,6 +311,10 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("Feedback");
 
+            entity.HasIndex(e => e.CourseId, "IX_Feedback_CourseID");
+
+            entity.HasIndex(e => e.UserId, "IX_Feedback_UserID");
+
             entity.Property(e => e.FeedbackId).HasColumnName("FeedbackID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
@@ -312,6 +342,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.PostId).HasName("PK__ForumPos__AA12603815D3DB81");
 
             entity.ToTable("ForumPost");
+
+            entity.HasIndex(e => e.ForumId, "IX_ForumPost_ForumID");
+
+            entity.HasIndex(e => e.UserId, "IX_ForumPost_UserID");
 
             entity.Property(e => e.PostId).HasColumnName("PostID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
@@ -341,6 +375,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.GradeId).HasName("PK__Grade__54F87A3769AA87FD");
 
             entity.ToTable("Grade");
+
+            entity.HasIndex(e => e.AssessmentId, "IX_Grade_AssessmentID");
+
+            entity.HasIndex(e => e.UserId, "IX_Grade_UserID");
 
             entity.Property(e => e.GradeId).HasColumnName("GradeID");
             entity.Property(e => e.AssessmentId).HasColumnName("AssessmentID");
@@ -374,6 +412,8 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("Lesson");
 
+            entity.HasIndex(e => e.CourseId, "IX_Lesson_CourseID");
+
             entity.Property(e => e.LessonId).HasColumnName("LessonID");
             entity.Property(e => e.Content).HasColumnType("text");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
@@ -394,11 +434,45 @@ public partial class LmsContext : DbContext
                 .HasConstraintName("FK__Lesson__CourseID__4D5F7D71");
         });
 
+        modelBuilder.Entity<LessonStep>(entity =>
+        {
+            entity.HasKey(e => e.LessonStepId).HasName("PK__LessonStep__B084ACB04D4D10C9");
+
+            entity.ToTable("LessonStep");
+
+            entity.Property(e => e.LessonStepId).HasColumnName("LessonStepID");
+            entity.Property(e => e.Content).HasColumnType("text");
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
+            entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.IsPaid).HasDefaultValue(true);
+            entity.Property(e => e.LessonId).HasColumnName("LessonID");
+            entity.Property(e => e.ModifiedBy)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.StepName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Course).WithMany(p => p.LessonSteps)
+                .HasForeignKey(d => d.CourseId)
+                .HasConstraintName("FK__LessonStep__CourseID__4D5F7D71");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.LessonSteps)
+                .HasForeignKey(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LessonStep__LessonID__4D5F7D71");
+        });
+
         modelBuilder.Entity<Module>(entity =>
         {
             entity.HasKey(e => e.ModuleId).HasName("PK__Module__2B7477870971D4C0");
 
             entity.ToTable("Module");
+
+            entity.HasIndex(e => e.CourseId, "IX_Module_CourseID");
 
             entity.Property(e => e.ModuleId).HasColumnName("ModuleID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
@@ -425,6 +499,8 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.QuestionId).HasName("PK__Question__0DC06F8C69A51E48");
 
             entity.ToTable("Question");
+
+            entity.HasIndex(e => e.QuizId, "IX_Question_QuizID");
 
             entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
             entity.Property(e => e.CorrectAnswer)
@@ -453,6 +529,8 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("Quiz");
 
+            entity.HasIndex(e => e.CourseId, "IX_Quiz_CourseID");
+
             entity.Property(e => e.QuizId).HasColumnName("QuizID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
@@ -478,6 +556,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.ResourceId).HasName("PK__Resource__4ED1814F2B313C3D");
 
             entity.ToTable("Resource");
+
+            entity.HasIndex(e => e.CourseId, "IX_Resource_CourseID");
+
+            entity.HasIndex(e => e.ModuleId, "IX_Resource_ModuleID");
 
             entity.Property(e => e.ResourceId).HasColumnName("ResourceID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
@@ -508,6 +590,10 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.SubmissionId).HasName("PK__Submissi__449EE105E7F5E9AA");
 
             entity.ToTable("Submission");
+
+            entity.HasIndex(e => e.AssignmentId, "IX_Submission_AssignmentID");
+
+            entity.HasIndex(e => e.UserId, "IX_Submission_UserID");
 
             entity.Property(e => e.SubmissionId).HasColumnName("SubmissionID");
             entity.Property(e => e.AssignmentId).HasColumnName("AssignmentID");
@@ -575,6 +661,8 @@ public partial class LmsContext : DbContext
 
             entity.ToTable("UserActivityLog");
 
+            entity.HasIndex(e => e.UserId, "IX_UserActivityLog_UserID");
+
             entity.Property(e => e.LogId).HasColumnName("LogID");
             entity.Property(e => e.ActivityDate).HasColumnType("datetime");
             entity.Property(e => e.ActivityDetails).HasColumnType("text");
@@ -599,6 +687,8 @@ public partial class LmsContext : DbContext
         modelBuilder.Entity<UserPreference>(entity =>
         {
             entity.HasKey(e => e.PreferenceId).HasName("PK__UserPref__E228490FA5BFCA85");
+
+            entity.HasIndex(e => e.UserId, "IX_UserPreferences_UserID");
 
             entity.Property(e => e.PreferenceId).HasColumnName("PreferenceID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");
@@ -627,6 +717,14 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.UserProgressId).HasName("PK__UserProg__DD2907C60DB6D93E");
 
             entity.ToTable("UserProgress");
+
+            entity.HasIndex(e => e.CourseId, "IX_UserProgress_CourseID");
+
+            entity.HasIndex(e => e.ModuleId, "IX_UserProgress_ModuleID");
+
+            entity.HasIndex(e => e.QuizId, "IX_UserProgress_QuizID");
+
+            entity.HasIndex(e => e.UserId, "IX_UserProgress_UserID");
 
             entity.Property(e => e.UserProgressId).HasColumnName("UserProgressID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
@@ -671,6 +769,8 @@ public partial class LmsContext : DbContext
             entity.HasKey(e => e.UserRoleId).HasName("PK__UserRole__3D978A55F36E6A56");
 
             entity.ToTable("UserRole");
+
+            entity.HasIndex(e => e.UserId, "IX_UserRole_UserID");
 
             entity.Property(e => e.UserRoleId).HasColumnName("UserRoleID");
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(sysdatetimeoffset())");

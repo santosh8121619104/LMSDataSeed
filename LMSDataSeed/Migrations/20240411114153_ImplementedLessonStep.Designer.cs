@@ -4,6 +4,7 @@ using LMSDataSeed.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMSDataSeed.Migrations
 {
     [DbContext(typeof(LmsContext))]
-    partial class LmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240411114153_ImplementedLessonStep")]
+    partial class ImplementedLessonStep
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -624,12 +627,9 @@ namespace LMSDataSeed.Migrations
 
             modelBuilder.Entity("LMSDataSeed.Models.LessonStep", b =>
                 {
-                    b.Property<int>("LessonStepId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("LessonId")
                         .HasColumnType("int")
-                        .HasColumnName("LessonStepID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LessonStepId"));
+                        .HasColumnName("LessonID");
 
                     b.Property<string>("Content")
                         .HasColumnType("text");
@@ -656,9 +656,12 @@ namespace LMSDataSeed.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<int>("LessonId")
+                    b.Property<int>("LessonStepId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("LessonID");
+                        .HasColumnName("LessonStepID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LessonStepId"));
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(255)
@@ -676,12 +679,10 @@ namespace LMSDataSeed.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("LessonStepId")
+                    b.HasKey("LessonId")
                         .HasName("PK__LessonStep__B084ACB04D4D10C9");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("LessonId");
 
                     b.ToTable("LessonStep", (string)null);
                 });

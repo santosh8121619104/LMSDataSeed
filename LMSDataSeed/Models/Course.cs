@@ -43,6 +43,8 @@ public partial class Course
 
     public virtual User? Instructor { get; set; }
 
+    public virtual ICollection<LessonStep> LessonSteps { get; set; } = new List<LessonStep>();
+
     public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 
     public virtual ICollection<Module> Modules { get; set; } = new List<Module>();
